@@ -1,0 +1,3 @@
+2025-04-28 23:36:53 ERROR ProductDao:86 - Failed to add product.
+2025-04-28 23:45:27 ERROR CartDao:173 - Database query error Cannot invoke "java.sql.PreparedStatement.setInt(int, int)" because "preparedStatement" is null: 
+2025-04-28 23:48:43 ERROR CartDao:173 - Database query error Cannot invoke "java.sql.PreparedStatement.setInt(int, int)" because "preparedStatement" is null: 
