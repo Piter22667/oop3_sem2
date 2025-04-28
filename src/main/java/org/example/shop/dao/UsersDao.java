@@ -1,5 +1,7 @@
 package org.example.shop.dao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.example.shop.model.Users;
 
 import java.sql.Connection;
@@ -11,6 +13,7 @@ import java.util.List;
 
 public class UsersDao {
     Connection connection;
+    private static final Logger logger = LoggerFactory.getLogger(UsersDao.class);
 
     private static final String CHECK_USER_LOGIN_PASS = "SELECT * FROM users WHERE username = ? AND password = ?";
 //    private static final String GET_ALL_USERS_UNPAID = "SELECT users.id AS user_id,\n" +
@@ -48,6 +51,7 @@ public class UsersDao {
                 return null;
             }
         } catch (SQLException e) {
+            logger.error("Database query error: {}", e.getMessage());
             throw new RuntimeException("Database query error", e);
         }
     }

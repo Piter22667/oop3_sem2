@@ -5,12 +5,15 @@ import java.io.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.example.shop.dao.ProductDao;
 import org.example.shop.model.Products;
 import org.example.shop.util.DbConnection;
 
 @WebServlet(name = "EditProductServlet", urlPatterns = "/editProduct")
 public class EditProductServlet extends HttpServlet {
+    private static final Logger logger = LoggerFactory.getLogger(EditProductServlet.class);
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -26,13 +29,16 @@ public class EditProductServlet extends HttpServlet {
         String image_url = request.getParameter("image_url");
 
 
-        System.out.println("Received product details:");
-        System.out.println("id: " + id);
-        System.out.println("name: " + name);
-        System.out.println("description: " + description);
-        System.out.println("price: " + price);
-        System.out.println("quantity: " + quantity);
-        System.out.println("image_url: " + image_url);
+//        System.out.println("Received product details:");
+//        System.out.println("id: " + id);
+//        System.out.println("name: " + name);
+//        System.out.println("description: " + description);
+//        System.out.println("price: " + price);
+//        System.out.println("quantity: " + quantity);
+//        System.out.println("image_url: " + image_url);
+
+        logger.info("Received product details: id: {}, name: {}, description: {}, price: {}, quantity: {}, image_url: {}",
+                id, name, description, price, quantity, image_url);
 
 
 

@@ -10,6 +10,8 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.example.shop.dao.ProductDao;
 import org.example.shop.model.Products;
 import org.example.shop.model.Users;
@@ -17,6 +19,9 @@ import org.example.shop.util.DbConnection;
 
 @WebServlet(name = "AdminProductsServlet", urlPatterns = "/adminProductsFunctions")
 public class AdminProductsServlet extends HttpServlet {
+
+    private static Logger logger = LoggerFactory.getLogger(AdminProductsServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 //        Users user = (Users) request.getSession().getAttribute("user");
@@ -29,13 +34,17 @@ public class AdminProductsServlet extends HttpServlet {
         request.setAttribute("productsList", productsList);
 
         for (Products product : productsList) {
-            System.out.println("Product: " + product.getName() + ", Description: " + product.getDescription() +
-                    ", Price: " + product.getPrice() + ", Image URL: " + product.getImage_url());
+            logger.info("Product name: {}, Description: {}, Price: {}, Image URL: {}",
+                    product.getName(), product.getDescription(), product.getPrice(), product.getImage_url());
+
+//            System.out.println("Product: " + product.getName() + ", Description: " + product.getDescription() +
+//                    ", Price: " + product.getPrice() + ", Image URL: " + product.getImage_url());
         } //for debugging
         String action = request.getServletPath();
         try {
             actionHandle(action, request, response);
         } catch (SQLException e) {
+            logger.error("Error while handling action: {}", action, e);
             throw new RuntimeException(e);
         }
         getServletContext().getRequestDispatcher("/WEB-INF/views/adminPage.jsp").forward(request, response);
@@ -99,6 +108,7 @@ public class AdminProductsServlet extends HttpServlet {
             request.setAttribute("product", existingProduct);
             dispatcher.forward(request, response);
         } catch (ServletException | IOException | RuntimeException e) {
+            logger.error("Error while updating product with ID: {}", id, e);
             throw new RuntimeException(e);
         }
     }
@@ -130,6 +140,7 @@ public class AdminProductsServlet extends HttpServlet {
         try {
             actionHandle(action, request, response);
         } catch (SQLException e) {
+            logger.error("Error while handling POST request: {}", action, e);
             throw new ServletException("Error while handling POST request", e);
         }
     }

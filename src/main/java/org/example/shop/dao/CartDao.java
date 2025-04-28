@@ -1,5 +1,7 @@
 package org.example.shop.dao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.example.shop.model.Cart;
 import org.example.shop.model.Users;
 
@@ -12,6 +14,10 @@ import java.util.List;
 
 public class CartDao {
     Connection connection;
+
+    private static final Logger logger = LoggerFactory.getLogger(CartDao.class);
+
+
 
     public CartDao(Connection connection) {
         this.connection = connection;
@@ -65,7 +71,8 @@ public class CartDao {
                         prepareStatement.setInt(2, userId);
                         prepareStatement.setInt(3, productId);
                         prepareStatement.executeUpdate();
-                        System.out.println("Product already in cart. Updated quantity to: " + newQuantity);
+                        logger.info("Product already in cart. Updated quantity to: {}", newQuantity );
+//                        System.out.println("Product already in cart. Updated quantity to: " + newQuantity);
                     }
                 } else {
                     try (PreparedStatement prepareStatement = connection.prepareStatement(ADD_TO_CART)) {
@@ -73,13 +80,15 @@ public class CartDao {
                         prepareStatement.setInt(2, productId);
                         prepareStatement.setInt(3, quantity);
                         prepareStatement.executeUpdate();
-                        System.out.println("Product added to cart.");
+                        logger.info("Added product to cart.");
+//                        System.out.println("Product added to cart.");
                     }
                 }
                 try (PreparedStatement isPaidStatement = connection.prepareStatement(UPDATE_USER_UNPAID_STATUS_CART)) {
                     isPaidStatement.setInt(1, userId);
                     isPaidStatement.executeUpdate();
-                    System.out.println("User with ID: " + userId + " is set to unpaid status after adding product " + productId + " to cart");
+                    logger.info("User with ID: {} is set to unpaid status after adding product {} to cart", userId, productId);
+//                    System.out.println("User with ID: " + userId + " is set to unpaid status after adding product " + productId + " to cart");
                 }
 
                 connection.commit();
@@ -89,6 +98,7 @@ public class CartDao {
                 if (connection != null) {
                     connection.rollback();
                 }
+                logger.error("Transaction failed, rolled back", e);
                 throw new RuntimeException("Transaction failed, rolled back", e);
             } finally {
                 if (connection != null) {
@@ -160,6 +170,7 @@ public class CartDao {
             }
             return cartList;
         } catch (Exception e) {
+            logger.error("Database query error {}: ", e.getMessage());
             throw new RuntimeException("Database query error", e);
         }
     }
@@ -187,7 +198,8 @@ public class CartDao {
 
 
             cart.add(new Cart(userId, productId, quantity, null, null, price));
-            System.out.println("Product ID: " + productId + ", Quantity: " + quantity + ", Price: " + price + "from CartDaoCheckout");
+            logger.info("Product ID: {}, Quantity: {}, Price: {} from CartDaoCheckout", productId, quantity, price);
+//            System.out.println("Product ID: " + productId + ", Quantity: " + quantity + ", Price: " + price + "from CartDaoCheckout");
         }
 
         PreparedStatement preparedStatement = connection.prepareStatement(CREATE_ORDER);
@@ -224,7 +236,8 @@ public class CartDao {
         PreparedStatement deleteFromCartStatement = connection.prepareStatement(DELET_FROM_CART_FOR_USER_WITH_ID);
         deleteFromCartStatement.setInt(1, userId);
         deleteFromCartStatement.executeUpdate();
-        System.out.println("Deleted all products from cart for user ID: " + userId);
+        logger.info("Deleted all products from cart for user ID: {}", userId);
+//        System.out.println("Deleted all products from cart for user ID: " + userId);
 
 
 
@@ -233,7 +246,8 @@ public class CartDao {
         if (connection != null) {
             connection.rollback();
         }
-        throw new RuntimeException("Transaction failed, rolled back", e);
+        logger.error("Transaction failed, rolled back: {}", e.getMessage());
+//        throw new RuntimeException("Transaction failed, rolled back", e);
     } finally {
         if (connection != null) {
             connection.setAutoCommit(true);

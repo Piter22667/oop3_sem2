@@ -1,5 +1,7 @@
 package org.example.shop.dao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.example.shop.model.BlackList;
 
 import java.sql.Connection;

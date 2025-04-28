@@ -7,11 +7,15 @@ import java.sql.SQLException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.example.shop.dao.CartDao;
 import org.example.shop.util.DbConnection;
 
 @WebServlet(name = "CheckoutServlet", urlPatterns = "/checkout")
 public class CheckoutServlet extends HttpServlet {
+    private static final Logger logger = LoggerFactory.getLogger(CheckoutServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -22,8 +26,9 @@ public class CheckoutServlet extends HttpServlet {
         HttpSession session = request.getSession();
         int userId = (int) session.getAttribute("userId");
         String username = (String) session.getAttribute("username");
-        System.out.println("User ID from session: " + userId + " from Checkout Servlet");
-//        request.setAttribute("userId", userId);
+        logger.info("Checkout user id: {}", userId);
+//        System.out.println("User ID from session: " + userId + " from Checkout Servlet");
+        request.setAttribute("userId", userId);
 
         Connection connection = DbConnection.getConnection();
         CartDao cartDao = new CartDao(connection);
@@ -37,7 +42,8 @@ public class CheckoutServlet extends HttpServlet {
             response.sendRedirect("/products");
             return;
         }
-        System.out.println("Payment successful for user ID: " + userId);
+        logger.info("Payment successful for user ID: {}", userId);
+//        System.out.println("Payment successful for user ID: " + userId);
 
 
     }

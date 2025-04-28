@@ -1,5 +1,7 @@
 package org.example.shop.dao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.example.shop.model.Products;
 
 import java.sql.Connection;
@@ -11,6 +13,7 @@ import java.util.List;
 
 public class ProductDao {
     Connection connection;
+    private static final Logger logger = LoggerFactory.getLogger(ProductDao.class);
 
     private static final String GET_ALL_PRODUCTS = "SELECT * FROM products";
     private static final String INSERT_PRODUCT = "INSERT INTO products (name, description, price, quantity, image_url) VALUES (?, ?, ?, ?, ?)";
@@ -39,6 +42,7 @@ public class ProductDao {
                 ));
             }
         } catch (Exception e) {
+            logger.error("Database query error: {}", e.getMessage());
             throw new RuntimeException("Database query error", e);
         }
         return products;
@@ -60,6 +64,7 @@ public class ProductDao {
                 );
             }
         } catch (Exception e) {
+            logger.error("Database query error: {}", e.getMessage());
             throw new RuntimeException("Database query error", e);
         }
         return product;
@@ -75,12 +80,15 @@ public class ProductDao {
             int rowsAdded = preparedStatement.executeUpdate();
 
             if(rowsAdded > 0) {
-                System.out.println("Product added successfully.");
+                logger.info("Product {} added successfully.", product.getName());
+//                System.out.println("Product added successfully.");
             } else {
-                System.out.println("Failed to add product.");
+                logger.error("Failed to add product.");
+//                System.out.println("Failed to add product.");
             }
 
         } catch (Exception e) {
+            logger.error("Database query error: {}", e.getMessage());
             throw new RuntimeException("Database query error", e);
         }
     }
@@ -99,17 +107,8 @@ public class ProductDao {
                 String currentImageUrl = resultSet.getString("image_url");
                 //отримуємо інформацію про опис кожного поля який наразі є в бд
 
-                System.out.println("-----------------");
-                System.out.println("Current product details in DAO CLASS:");
-                System.out.println("id: " + product.getId());
-                System.out.println("name: " + currentName);
-                System.out.println("description: " + currentDescription);
-                System.out.println("price: " + currentPrice);
-                System.out.println("quantity: " + currentQuantity);
-                System.out.println("image_url: " + currentImageUrl);
-
-
-
+                logger.info("Current product details in DAO CLASS: id: {}, name: {}, description: {}, price: {}, quantity: {}, image_url: {}",
+                        product.getId(), currentName, currentDescription, currentPrice, currentQuantity, currentImageUrl);
 
                 String newName = product.getName();
                 String newDescription = product.getDescription();
@@ -126,25 +125,24 @@ public class ProductDao {
                         preparedStatement1.setInt(4, newQuantity);
                         preparedStatement1.setString(5, newImageUrl);
                         preparedStatement1.setInt(6, product.getId());
-                        System.out.println("Received product in productDaoClass with id: " + product.getId());
+                        logger.info("Received product in productDaoClass with id: {}", product.getId());
 
 
                         int rowsUpdated = preparedStatement1.executeUpdate();
 
                         if(rowsUpdated > 0) {
-                            System.out.println("Product" + currentName + " updated successfully.");
+                            logger.info("Product {} updated successfully.", currentName);
                         } else {
-                            System.out.println("Failed to update product.");
+                            logger.error("Failed to update product.");
                         }
                     }
                 }
                 else {
-                    System.out.println("No changes detected. Product not updated.");
+                    logger.info("No changes detected. Product not updated.");
                 }
-
             }
             else {
-                System.out.println("Product with id " + product.getId() + " not found.");
+                logger.error("Product with id {} not found.", product.getId());
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

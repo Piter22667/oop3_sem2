@@ -1,6 +1,8 @@
 package org.example.shop.dao;
 
 import jdk.jshell.spi.ExecutionControl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.example.shop.model.Orders;
 
 import java.sql.Connection;
@@ -12,6 +14,7 @@ import java.util.List;
 
 public class OrderDao {
     Connection connection;
+    private static final Logger logger = LoggerFactory.getLogger(OrderDao.class);
 
     public OrderDao(Connection connection) {
         this.connection = connection;
@@ -33,6 +36,7 @@ public class OrderDao {
             }
             return ordersList;
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }

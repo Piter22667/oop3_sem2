@@ -8,12 +8,17 @@ import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.example.shop.dao.ProductDao;
 import org.example.shop.model.Products;
 import org.example.shop.util.DbConnection;
 
     @WebServlet(name = "ProductsListServlet", urlPatterns = "/products")
 public class ProductsListServlet extends HttpServlet {
+        private static final Logger logger = LoggerFactory.getLogger(ProductsListServlet.class);
+
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Отримуємо з'єднання через синглтон
@@ -24,13 +29,13 @@ public class ProductsListServlet extends HttpServlet {
         List<Products> productsList = productDao.getAllProducts();
         request.setAttribute("productsList", productsList);
         for (Products product : productsList) {
-            System.out.println("Product: " + product.getName() + ", Description: " + product.getDescription() +
-                    ", Price: " + product.getPrice() + ", Image URL: " + product.getImage_url());
+            logger.info("Product name: {}\n, Product description: {}\n, Product price: {}\n, Product image URL: {}\n",
+                    product.getName(), product.getDescription(),  product.getPrice(), product.getImage_url());
+
+            //            System.out.println("Product: " + product.getName() + ", Description: " + product.getDescription() +
+//                    ", Price: " + product.getPrice() + ", Image URL: " + product.getImage_url());
         } //for debugging
-
-
         getServletContext().getRequestDispatcher("/WEB-INF/views/userShop.jsp").forward(request, response);
-
     }
 
     @Override
